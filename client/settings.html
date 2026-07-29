@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NetGuardian &mdash; Settings</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="ng-sidebar">
+  <div class="brand"><span class="dot"></span> NetGuardian</div>
+  <a href="dashboard.html">&#128202; Dashboard</a>
+  <a href="devices.html">&#128225; Devices</a>
+  <a href="alerts.html">&#128276; Alerts</a>
+  <a href="reports.html">&#128196; Reports</a>
+  <a href="logs.html">&#128220; Activity Log</a>
+  <a href="settings.html" class="active">&#9881;&#65039; Settings</a>
+  <hr style="border-color:rgba(255,255,255,0.1); margin: 1rem 0;">
+  <a href="#" id="logoutBtn">&#8618; Sign Out</a>
+</nav>
+
+<main class="ng-main">
+  <div class="mb-4">
+    <h4 class="mb-0" style="color:var(--ng-navy); font-weight:700;">Settings</h4>
+    <p class="text-muted mb-0" style="font-size:0.88rem;">Alert thresholds apply immediately. Network range and timing values are used by your standalone Agent - update your Agent's own configuration to match if you change these here.</p>
+  </div>
+
+  <div id="statusMsg" class="alert d-none"></div>
+  <div id="readOnlyNotice" class="alert alert-info d-none">
+    You're viewing settings in read-only mode. Only an admin can make changes.
+  </div>
+
+  <div class="ng-card mb-3">
+    <h6 class="fw-bold mb-1" style="color:var(--ng-navy);">Organization</h6>
+    <p class="text-muted mb-3" style="font-size:0.85rem;" id="orgNameDisplay">Loading...</p>
+
+    <h6 class="fw-bold mb-2" style="color:var(--ng-navy);">Agent Token</h6>
+    <p class="text-muted mb-2" style="font-size:0.85rem;">
+      Your standalone <a href="../agent/README.md">Agent</a> (which runs on your own network to actually discover devices) uses this token to authenticate its reports. Generating a new one immediately invalidates the old one - update your Agent's <code>.env</code> file if you regenerate.
+    </p>
+    <div id="agentTokenStatus" class="mb-2" style="font-size:0.85rem;"></div>
+    <div id="agentLastSeen" class="mb-2" style="font-size:0.85rem;"></div
+    <div id="newAgentTokenBox" class="alert alert-warning d-none" style="font-size:0.85rem; word-break:break-all;"></div>
+<!-- Replace the existing single button line:
+     <button type="button" class="btn btn-outline-secondary btn-sm" id="generateAgentTokenBtn">Generate New Agent Token</button>
+
+     with this block (adds the Download button + a clarifying note): -->
+
+<div class="d-flex gap-2 flex-wrap">
+  <button type="button" class="btn btn-ng-gold btn-sm" id="downloadAgentBtn">&#11015;&#65039; Download Agent</button>
+  <button type="button" class="btn btn-outline-secondary btn-sm" id="generateAgentTokenBtn">Generate New Agent Token (without downloading)</button>
+</div>
+<p class="text-muted mt-2 mb-0" style="font-size:0.8rem;">
+  <strong>Download Agent</strong> gives you a ready-to-run copy of the Agent with a fresh token already configured &mdash; unzip it, run <code>npm install</code>, then <code>npm start</code>.
+  Either button generates a new token, which invalidates any token currently in use &mdash; only use one or the other, not both back to back.
+</p>  </div>
+
+  <form id="settingsForm">
+    <div class="ng-card mb-3">
+      <h6 class="fw-bold mb-3" style="color:var(--ng-navy);">Network</h6>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Network Range (CIDR)</label>
+          <input type="text" class="form-control" id="networkRange" placeholder="192.168.1.0/24" required>
+          <div class="form-text">The subnet to discover and monitor devices on, e.g. <code>192.168.1.0/24</code>.</div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Gateway IP <span class="text-muted">(optional)</span></label>
+          <input type="text" class="form-control" id="gatewayIp" placeholder="192.168.1.1">
+          <div class="form-text">Your router's IP. If set, NetGuardian alerts if it becomes unreachable.</div>
+        </div>
+      </div>
+      <div class="form-check mt-3 d-none" id="clearOldDevicesWrap">
+        <input class="form-check-input" type="checkbox" id="clearOldDevices">
+        <label class="form-check-label" for="clearOldDevices" style="font-size:0.85rem;">
+          Also remove devices from the previous network range (they'll no longer show up, since they don't belong to the new range)
+        </label>
+      </div>
+    </div>
+
+    <div class="ng-card mb-3">
+      <h6 class="fw-bold mb-3" style="color:var(--ng-navy);">Scan Timing</h6>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Full Scan Interval (minutes)</label>
+          <input type="number" class="form-control" id="scanIntervalMinutes" min="1" max="120" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Fast Poll Interval (seconds)</label>
+          <input type="number" class="form-control" id="fastPollSeconds" min="2" max="300" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Gateway Check Interval (seconds)</label>
+          <input type="number" class="form-control" id="gatewayCheckSeconds" min="10" max="3600" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="ng-card mb-3">
+      <h6 class="fw-bold mb-3" style="color:var(--ng-navy);">Alert Thresholds</h6>
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">High Latency (ms)</label>
+          <input type="number" class="form-control" id="latencyThresholdMs" min="1" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Flap Threshold (count)</label>
+          <input type="number" class="form-control" id="flapThresholdCount" min="2" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Flap Window (minutes)</label>
+          <input type="number" class="form-control" id="flapWindowMinutes" min="1" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Uptime Snapshot (minutes)</label>
+          <input type="number" class="form-control" id="uptimeSnapshotMinutes" min="1" max="60" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="ng-card mb-3">
+      <h6 class="fw-bold mb-3" style="color:var(--ng-navy);">Email Alerts</h6>
+      <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" id="alertEmailEnabled">
+        <label class="form-check-label" for="alertEmailEnabled">Email admins when a serious alert is raised</label>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-8">
+          <label class="form-label">Recipients</label>
+          <input type="text" class="form-control" id="alertEmailRecipients" placeholder="admin@company.com, it@company.com">
+          <div class="form-text">Comma-separated email addresses.</div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Minimum Severity</label>
+          <select class="form-select" id="alertEmailMinSeverity">
+            <option value="low">Low and above</option>
+            <option value="medium">Medium and above</option>
+            <option value="high">High and above</option>
+            <option value="critical">Critical only</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add this new card inside <form id="settingsForm">, right before the
+     closing </form> tag (after the "Email Alerts" card, before the
+     "Save Settings" button): -->
+
+<div class="ng-card mb-3">
+  <h6 class="fw-bold mb-1" style="color:var(--ng-navy);">Router Integration</h6>
+  <p class="text-muted mb-3" style="font-size:0.85rem;">
+    Optional. If configured, blocking a device in NetGuardian also applies a real block on your router/firewall - not just a status label in the dashboard.
+  </p>
+  <div class="row g-3">
+    <div class="col-md-4">
+      <label class="form-label">Router Brand</label>
+      <select class="form-select" id="routerBrand">
+        <option value="none">None (dashboard status only)</option>
+        <option value="unifi">UniFi (Ubiquiti)</option>
+        <option value="mikrotik">MikroTik</option>
+        <option value="fortigate">FortiGate</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Controller URL</label>
+      <input type="text" class="form-control" id="routerApiUrl" placeholder="https://192.168.1.1">
+      <div class="form-text">e.g. <code>https://192.168.1.1</code> (UniFi OS) or <code>https://192.168.1.1:8443</code> (legacy UniFi controller)</div>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Site ID <span class="text-muted">(UniFi only)</span></label>
+      <input type="text" class="form-control" id="routerSiteId" placeholder="default">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Admin Username</label>
+      <input type="text" class="form-control" id="routerApiUsername" placeholder="Local admin account (not a ui.com login)">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Admin Password / API Secret</label>
+      <input type="password" class="form-control" id="routerApiSecret" placeholder="Leave blank to keep current secret">
+      <div class="form-text">Leave blank if you're not changing it - your saved secret won't be cleared.</div>
+    </div>
+  </div>
+</div>
+    <button type="submit" class="btn btn-ng-gold" id="saveBtn">Save Settings</button>
+
+  </form>
+</main>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/settings.js"></script>
+</body>
+</html>

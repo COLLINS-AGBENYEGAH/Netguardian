@@ -1,0 +1,16 @@
+{
+  "name": "netguardian-agent",
+  "version": "1.0.0",
+  "description": "NetGuardian standalone scanning Agent - runs on your own network, reports discovered devices to your NetGuardian dashboard",
+  "main": "agent.js",
+  "scripts": {
+    "start": "node agent.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ping": "^0.4.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

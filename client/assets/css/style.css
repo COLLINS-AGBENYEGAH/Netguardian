@@ -1,0 +1,194 @@
+:root {
+  --ng-navy: #0a1a3c;
+  --ng-navy-light: #132a5e;
+  --ng-navy-lighter: #1c3a7a;
+  --ng-gold: #d4af37;
+  --ng-gold-light: #e8cc6c;
+  --ng-bg: #f4f6fb;
+  --ng-text: #1c2230;
+  --ng-muted: #6b7690;
+  --ng-danger: #d64550;
+  --ng-success: #2e9e6b;
+  --ng-warning: #e0a721;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background-color: var(--ng-bg);
+  color: var(--ng-text);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* --- Layout shell --- */
+.ng-sidebar {
+  background: linear-gradient(180deg, var(--ng-navy) 0%, var(--ng-navy-light) 100%);
+  min-height: 100vh;
+  color: #eef1f8;
+  width: 250px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 1.5rem 1rem;
+}
+
+.ng-sidebar .brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: 0.5px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.ng-sidebar .brand .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ng-gold);
+  box-shadow: 0 0 8px var(--ng-gold);
+}
+
+.ng-sidebar a {
+  color: #c7cfe6;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  margin-bottom: 0.25rem;
+  font-size: 0.92rem;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ng-sidebar a:hover,
+.ng-sidebar a.active {
+  background: rgba(212, 175, 55, 0.14);
+  color: var(--ng-gold-light);
+}
+
+.ng-main {
+  margin-left: 250px;
+  padding: 1.75rem 2rem;
+}
+
+@media (max-width: 900px) {
+  .ng-sidebar { width: 100%; min-height: auto; position: relative; }
+  .ng-main { margin-left: 0; }
+}
+
+/* --- Cards --- */
+.ng-card {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e7eaf3;
+  padding: 1.25rem 1.4rem;
+  box-shadow: 0 1px 3px rgba(10, 26, 60, 0.04);
+}
+
+.ng-stat-card .label {
+  color: var(--ng-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ng-stat-card .value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ng-navy);
+}
+
+.ng-stat-card .accent-bar {
+  height: 4px;
+  width: 40px;
+  background: var(--ng-gold);
+  border-radius: 2px;
+  margin-bottom: 0.6rem;
+}
+
+/* --- Badges --- */
+.badge-online { background: rgba(46, 158, 107, 0.12); color: var(--ng-success); }
+.badge-offline { background: rgba(107, 118, 144, 0.14); color: var(--ng-muted); }
+.badge-authorized { background: rgba(46, 158, 107, 0.12); color: var(--ng-success); }
+.badge-unauthorized { background: rgba(214, 69, 80, 0.12); color: var(--ng-danger); }
+.badge-blocked { background: rgba(214, 69, 80, 0.18); color: var(--ng-danger); }
+.badge-pending { background: rgba(224, 167, 33, 0.15); color: var(--ng-warning); }
+
+.badge-severity-low { background: rgba(107, 118, 144, 0.14); color: var(--ng-muted); }
+.badge-severity-medium { background: rgba(224, 167, 33, 0.15); color: var(--ng-warning); }
+.badge-severity-high { background: rgba(214, 69, 80, 0.14); color: var(--ng-danger); }
+.badge-severity-critical { background: var(--ng-danger); color: #fff; }
+
+.ng-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  text-transform: capitalize;
+}
+
+/* --- Buttons --- */
+.btn-ng-gold {
+  background: var(--ng-gold);
+  border: none;
+  color: var(--ng-navy);
+  font-weight: 600;
+}
+.btn-ng-gold:hover { background: var(--ng-gold-light); color: var(--ng-navy); }
+
+.btn-ng-navy {
+  background: var(--ng-navy);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+}
+.btn-ng-navy:hover { background: var(--ng-navy-light); color: #fff; }
+
+/* --- Auth pages --- */
+.ng-auth-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top left, var(--ng-navy-lighter), var(--ng-navy) 60%);
+}
+
+.ng-auth-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.ng-auth-card .brand {
+  color: var(--ng-navy);
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin-bottom: 0.25rem;
+}
+
+.ng-auth-card .brand .dot {
+  color: var(--ng-gold);
+}
+
+table.ng-table th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--ng-muted);
+  border-bottom: 2px solid #eef0f6;
+}
+
+table.ng-table td { vertical-align: middle; font-size: 0.9rem; }
+
+.ng-empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--ng-muted);
+}

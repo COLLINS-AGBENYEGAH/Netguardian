@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NetGuardian &mdash; Devices</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="ng-sidebar">
+  <div class="brand"><span class="dot"></span> NetGuardian</div>
+  <a href="dashboard.html">&#128202; Dashboard</a>
+  <a href="devices.html" class="active">&#128225; Devices</a>
+  <a href="alerts.html">&#128276; Alerts</a>
+  <a href="reports.html">&#128196; Reports</a>
+  <a href="logs.html">&#128220; Activity Log</a>
+  <a href="settings.html">&#9881;&#65039; Settings</a>
+  <hr style="border-color:rgba(255,255,255,0.1); margin: 1rem 0;">
+  <a href="#" id="logoutBtn">&#8618; Sign Out</a>
+</nav>
+
+<main class="ng-main">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h4 class="mb-0" style="color:var(--ng-navy); font-weight:700;">Devices</h4>
+      <p class="text-muted mb-0" style="font-size:0.88rem;">Every device NetGuardian has discovered or you've added.</p>
+    </div>
+    <button class="btn btn-ng-gold" data-bs-toggle="modal" data-bs-target="#addDeviceModal">+ Add Device</button>
+  </div>
+
+  <div class="ng-card mb-3">
+    <div class="row g-2">
+      <div class="col-md-4">
+        <input type="text" class="form-control" id="searchInput" placeholder="Search IP, MAC, hostname, owner...">
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" id="statusFilter">
+          <option value="">All Status</option>
+          <option value="online">Online</option>
+          <option value="offline">Offline</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" id="authFilter">
+          <option value="">All Authorization</option>
+          <option value="authorized">Authorized</option>
+          <option value="unauthorized">Unauthorized</option>
+          <option value="pending">Pending</option>
+          <option value="blocked">Blocked</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-outline-secondary w-100" id="filterBtn">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ng-card">
+    <div class="table-responsive">
+      <table class="table ng-table align-middle">
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>IP Address</th>
+            <th>MAC Address</th>
+            <th>Hostname</th>
+            <th>Vendor</th>
+            <th>Type</th>
+            <th>Owner</th>
+            <th>Authorization</th>
+            <th>Uptime</th>
+            <th>Last Seen</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="deviceTableBody">
+          <tr><td colspan="11" class="text-center text-muted py-4">Loading devices...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- Add Device Modal -->
+<div class="modal fade" id="addDeviceModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Device Manually</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="addDeviceForm">
+        <div class="modal-body">
+          <div class="mb-2">
+            <label class="form-label">IP Address</label>
+            <input type="text" class="form-control" id="d_ip" placeholder="192.168.1.50" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">MAC Address</label>
+            <input type="text" class="form-control" id="d_mac" placeholder="AA:BB:CC:DD:EE:FF" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Hostname</label>
+            <input type="text" class="form-control" id="d_hostname" placeholder="e.g. Front-Office-PC">
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Device Type</label>
+            <select class="form-select" id="d_type">
+              <option>PC</option><option>Laptop</option><option>Phone</option>
+              <option>Printer</option><option>Router</option><option>Server</option>
+              <option>IoT</option><option>Other</option>
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Owner</label>
+            <input type="text" class="form-control" id="d_owner" placeholder="e.g. Registrar's Office">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-ng-navy">Save Device</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/devices.js"></script>
+</body>
+</html>
