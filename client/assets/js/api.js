@@ -4,7 +4,7 @@
  */
 const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:5000/api'
-  : 'https://netguardian-3lub.onrender.com';
+  : 'https://api.netguardiancollins.me/';
 
 function getToken() {
   return localStorage.getItem('ng_token');
