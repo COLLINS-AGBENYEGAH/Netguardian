@@ -3,7 +3,7 @@
  * Set API_BASE_URL to your Render backend URL once deployed.
  */
 const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-  ? 'https://api.netguardiancollins.me'
+  ? 'https://api.netguardiancollins.me/api'
   : 'https://api.netguardiancollins.me';
 
 function getToken() {
