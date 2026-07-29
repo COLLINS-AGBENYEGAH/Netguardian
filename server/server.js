@@ -56,7 +56,7 @@ const app = express();
 app.use(express.json());
 app.use(helmet());
 
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || process.env.CLIENT_URL || 'http://localhost:5500')
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || process.env.CLIENT_URL || 'www.netguardiancollins.me')
   .split(',')
   .map((o) => o.trim())
   .filter(Boolean);
