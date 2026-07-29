@@ -1,3 +1,22 @@
+/**
+ * Escapes HTML special characters so values from untrusted sources
+ * (device hostnames, vendor names, owner guesses - all ultimately
+ * derived from data broadcast by devices on the network) can't inject
+ * markup or scripts when inserted via innerHTML. A malicious device
+ * could set its DHCP hostname to something like
+ * "<script>...</script>" - without this, that would execute in the
+ * browser of anyone viewing this page.
+ */
+function escapeHtml(value) {
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function uptimeBadge(uptimePercent) {
   if (uptimePercent === null || uptimePercent === undefined) {
     return '<span class="text-muted" style="font-size:0.8rem;">No data yet</span>';
@@ -9,11 +28,11 @@ function uptimeBadge(uptimePercent) {
 }
 
 function statusBadge(status) {
-  return `<span class="ng-badge badge-${status}">${status}</span>`;
+  return `<span class="ng-badge badge-${escapeHtml(status)}">${escapeHtml(status)}</span>`;
 }
 
 function authBadge(auth) {
-  return `<span class="ng-badge badge-${auth}">${auth}</span>`;
+  return `<span class="ng-badge badge-${escapeHtml(auth)}">${escapeHtml(auth)}</span>`;
 }
 
 function timeAgo(dateStr) {
@@ -53,12 +72,12 @@ async function loadDevices() {
     tbody.innerHTML = devices.map((d) => `
       <tr>
         <td>${statusBadge(d.status)}</td>
-        <td>${d.ipAddress}</td>
-        <td><code style="font-size:0.78rem;">${d.macAddress}</code></td>
-        <td>${d.hostname || 'Unknown'}</td>
-        <td class="text-muted" style="font-size:0.82rem;">${d.vendor || 'Unknown'}</td>
-        <td>${d.deviceType}</td>
-        <td>${d.owner || '&mdash;'}</td>
+        <td>${escapeHtml(d.ipAddress)}</td>
+        <td><code style="font-size:0.78rem;">${escapeHtml(d.macAddress)}</code></td>
+        <td>${escapeHtml(d.hostname) || 'Unknown'}</td>
+        <td class="text-muted" style="font-size:0.82rem;">${escapeHtml(d.vendor) || 'Unknown'}</td>
+        <td>${escapeHtml(d.deviceType)}</td>
+        <td>${escapeHtml(d.owner) || '&mdash;'}</td>
         <td>${authBadge(d.authorization)}</td>
         <td>${uptimeBadge(d.uptimePercent)}</td>
         <td class="text-muted" style="font-size:0.8rem;">${timeAgo(d.lastSeen)}</td>
@@ -76,7 +95,7 @@ async function loadDevices() {
       </tr>
     `).join('');
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="11" class="text-danger text-center py-4">${err.message}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="11" class="text-danger text-center py-4">${escapeHtml(err.message)}</td></tr>`;
   }
 }
 
@@ -145,7 +164,7 @@ loadDevices();
 // reload. Pauses while the tab isn't visible. Re-rendering the table does
 // close any open row-action dropdown menu - a minor, acceptable trade-off
 // for staying current automatically.
-const AUTO_REFRESH_MS = 60000;
+const AUTO_REFRESH_MS = 15000;
 let devicesRefreshTimer = null;
 
 function startDevicesAutoRefresh() {
