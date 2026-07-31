@@ -68,10 +68,15 @@ if (inactiveDuration > ONE_HOUR) {
 
 
 // Update activity
-req.user.lastActivity = new Date();
+const FIVE_MINUTES = 5 * 60 * 1000;
 
-await req.user.save();
-
+if (
+    !req.user.lastActivity ||
+    Date.now() - new Date(req.user.lastActivity).getTime() > FIVE_MINUTES
+) {
+    req.user.lastActivity = new Date();
+    await req.user.save();
+}
 
 return next();
   };
