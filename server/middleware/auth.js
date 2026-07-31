@@ -74,6 +74,7 @@ await req.user.save();
 
 
 return next();
+  };
 // Usage: authorize('admin', 'technician')
 const authorize = (...roles) => {
   return (req, res, next) => {
