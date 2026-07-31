@@ -34,7 +34,7 @@
         <label class="form-label">Password</label>
         <input type="password" class="form-control" id="loginPassword" required>
       </div>
-      <button type="submit" class="btn btn-ng-navy w-100">Sign In</button>
+      <button type="submit" class="btn btn-ng-navy w-100" id="loginBtn">Sign In</button>
       <p class="text-center mt-2 mb-0">
         <a href="forgot-password.html" style="font-size:0.82rem; color:var(--ng-muted);">Forgot your password?</a>
       </p>
@@ -47,8 +47,7 @@
       </div>
       <div class="mb-3">
         <label class="form-label">Organization / Network Name</label>
-        <input type="text" class="form-control" id="registerOrgName" placeholder="e.g. Acme Corp, My Home Network" required>
-        <div class="form-text" style="font-size:0.76rem;">A name for the network you'll be monitoring - this creates your own independent workspace.</div>
+        <input type="text" class="form-control" id="registerOrgName" placeholder="e.g. Acme Corp" required>
       </div>
       <div class="mb-3">
         <label class="form-label">Email</label>
@@ -59,19 +58,9 @@
         <input type="password" class="form-control" id="registerPassword" minlength="8" required>
         <div class="form-text" style="font-size:0.76rem;">At least 8 characters, with uppercase, lowercase, a number, and a special character.</div>
       </div>
-      <button type="submit" class="btn btn-ng-gold w-100">Create Account</button>
-      <p class="text-muted mt-2 mb-0" style="font-size:0.78rem;">You'll become the admin of your own independent NetGuardian workspace.</p>
+      <button type="submit" class="btn btn-ng-gold w-100" id="registerBtn">Create Account</button>
+      <p class="text-muted mt-2 mb-0" style="font-size:0.78rem;">The first account created becomes the system admin.</p>
     </form>
-
-    <div id="agentTokenReveal" class="d-none">
-      <div class="alert alert-success" style="font-size:0.88rem;">
-        <strong>Account created!</strong> Here's your Agent token - copy it now, it will not be shown again. You'll need it to set up your standalone Agent (see the Settings page later for details).
-      </div>
-      <div class="ng-card mb-3" style="word-break:break-all; font-size:0.85rem;">
-        <code id="agentTokenText"></code>
-      </div>
-      <button type="button" class="btn btn-ng-navy w-100" id="continueToDashboardBtn">I've copied it - Continue to Dashboard</button>
-    </div>
   </div>
 </div>
 
@@ -96,39 +85,47 @@
 
   document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const btn = document.getElementById('loginBtn');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Signing in...';
+
     try {
       const email = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
       const { token, user } = await NetGuardianAPI.login(email, password);
       setSession(token, user);
       window.location.href = 'dashboard.html';
+      // Intentionally leave the button disabled/spinning here - we're
+      // navigating away momentarily, so re-enabling it would just cause
+      // a visible flicker back to normal right before the page changes.
     } catch (err) {
       showError(err.message);
+      btn.disabled = false;
+      btn.textContent = originalText;
     }
   });
 
   document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const btn = document.getElementById('registerBtn');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Creating account...';
+
     try {
       const name = document.getElementById('registerName').value;
       const organizationName = document.getElementById('registerOrgName').value;
       const email = document.getElementById('registerEmail').value;
       const password = document.getElementById('registerPassword').value;
-      const { token, user, agentToken } = await NetGuardianAPI.register(name, organizationName, email, password);
+      const { token, user } = await NetGuardianAPI.register(name, organizationName, email, password);
       setSession(token, user);
-
-      // Show the one-time agent token before navigating away - it cannot
-      // be retrieved again once this page is left.
-      document.getElementById('registerForm').classList.add('d-none');
-      document.getElementById('agentTokenText').textContent = agentToken;
-      document.getElementById('agentTokenReveal').classList.remove('d-none');
+      window.location.href = 'dashboard.html';
     } catch (err) {
       showError(err.message);
+      btn.disabled = false;
+      btn.textContent = originalText;
     }
-  });
-
-  document.getElementById('continueToDashboardBtn').addEventListener('click', () => {
-    window.location.href = 'dashboard.html';
   });
 </script>
 </body>
