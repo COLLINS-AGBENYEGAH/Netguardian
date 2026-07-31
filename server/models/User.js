@@ -13,7 +13,11 @@ const userSchema = new mongoose.Schema(
     // Password reset - a hashed token (never store the raw token) with an
     // expiry, cleared once used or once a new reset is requested
     resetPasswordTokenHash: { type: String, default: null },
-    resetPasswordExpires: { type: Date, default: null }
+    resetPasswordExpires: { type: Date, default: null },
+    lastActivity: {
+    type: Date,
+    default: Date.now
+},
   },
   { timestamps: true }
 );
