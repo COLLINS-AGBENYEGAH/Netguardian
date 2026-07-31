@@ -87,6 +87,7 @@ exports.login = async (req, res) => {
     }
 
     user.lastLogin = new Date();
+    user.lastActivity = new Date();
     await user.save();
     await Log.create({
       organizationId: user.organizationId,
