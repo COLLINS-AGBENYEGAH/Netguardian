@@ -32,13 +32,48 @@ const protect = async (req, res, next) => {
     return res.status(503).json({ message: 'Service temporarily unavailable - please try again in a moment' });
   }
 
-  if (!req.user || !req.user.isActive) {
-    return res.status(401).json({ message: 'Not authorized, account inactive or not found' });
-  }
+ if (!req.user || !req.user.isActive) {
+    return res.status(401).json({
+        message: 'Not authorized, account inactive or not found'
+    });
+}
 
-  return next();
-};
 
+// -------------------------------
+// Inactivity timeout
+// -------------------------------
+
+const ONE_HOUR = 60 * 60 * 1000;
+
+const lastActivity = req.user.lastActivity
+    ? new Date(req.user.lastActivity).getTime()
+    : Date.now();
+
+const inactiveDuration = Date.now() - lastActivity;
+
+
+if (inactiveDuration > ONE_HOUR) {
+
+    await Log.create({
+        organizationId: req.user.organizationId,
+        action: 'logout',
+        user: req.user._id,
+        details: `${req.user.email} logged out due to inactivity`
+    });
+
+    return res.status(401).json({
+        message: 'Session expired due to inactivity. Please login again.'
+    });
+}
+
+
+// Update activity
+req.user.lastActivity = new Date();
+
+await req.user.save();
+
+
+return next();
 // Usage: authorize('admin', 'technician')
 const authorize = (...roles) => {
   return (req, res, next) => {
