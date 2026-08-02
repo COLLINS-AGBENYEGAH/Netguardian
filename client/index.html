@@ -83,6 +83,13 @@
   // Redirect straight to dashboard if already logged in
   if (getToken()) window.location.href = 'dashboard.html';
 
+  // If we landed here because auth.js auto-logged the person out due to
+  // inactivity, show a clear reason instead of a silent, confusing logout.
+  if (sessionStorage.getItem('ng_idle_logout')) {
+    sessionStorage.removeItem('ng_idle_logout');
+    showError('You were signed out after a period of inactivity. Please sign in again.');
+  }
+
   document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('loginBtn');
