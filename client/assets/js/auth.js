@@ -13,7 +13,7 @@ document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
 // file (i.e. pages already behind requireAuth()) - never on the
 // login/register page itself, since there's no session to expire there.
 
-const IDLE_TIMEOUT_MS = 15 * 1000; // 15 minutes
+const IDLE_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
 let idleTimer = null;
 
 function handleIdleLogout() {
